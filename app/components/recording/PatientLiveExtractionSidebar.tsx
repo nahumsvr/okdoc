@@ -1,9 +1,36 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function PatientLiveExtractionSidebar() {
+    const [patient, setPatient] = useState<any>(null);
+    const [age, setAge] = useState<string>("Desconocido");
+
+    useEffect(() => {
+        const stored = localStorage.getItem("selected_patient");
+        if (stored) {
+            try {
+                const p = JSON.parse(stored);
+                setPatient(p);
+                
+                if (p.fechaNacimiento) {
+                    const dob = new Date(p.fechaNacimiento);
+                    const diffMs = Date.now() - dob.getTime();
+                    const ageDt = new Date(diffMs); 
+                    const calculatedAge = Math.abs(ageDt.getUTCFullYear() - 1970);
+                    setAge(`${calculatedAge} Años`);
+                }
+            } catch (e) {
+                // ignore
+            }
+        }
+    }, []);
+
+    const name = patient?.nombreCompleto || patient?.nombre || "Desconocido";
+    const bloodType = patient?.tipoSangre || "Desconocido";
+    const allergies = patient?.alergias && patient.alergias.length > 0 ? patient.alergias.join(', ') : "Desconocido";
+
     return (
         <aside className="lg:col-span-5 space-y-6">
             <div className="bg-surface-container-lowest p-8 rounded-[2rem] shadow-[0_12px_32px_-4px_rgba(0,45,88,0.08)] sticky top-24 border border-outline-variant/20">
@@ -18,19 +45,19 @@ export default function PatientLiveExtractionSidebar() {
                         <div className="grid grid-cols-2 gap-3">
                             <div className="bg-surface-container-low p-5 rounded-xl border border-outline-variant/10">
                                 <span className="text-xs font-bold text-[#43474f] uppercase">Nombre</span>
-                                <p className="text-lg font-black text-[#C6A152] mt-1">Julianne V. Sterling</p>
+                                <p className="text-sm font-black text-[#C6A152] mt-1 break-words">{name}</p>
                             </div>
                             <div className="bg-surface-container-low p-5 rounded-xl border border-outline-variant/10">
                                 <span className="text-xs font-bold text-[#43474f] uppercase">Edad</span>
-                                <p className="text-lg font-black text-[#001834] mt-1">34 Años</p>
+                                <p className="text-lg font-black text-[#001834] mt-1 break-words">{age}</p>
                             </div>
                             <div className="bg-surface-container-low p-5 rounded-xl border border-outline-variant/10">
                                 <span className="text-xs font-bold text-[#43474f] uppercase">Tipo de Sangre</span>
-                                <p className="text-lg font-black text-[#001834] mt-1">O Positivo</p>
+                                <p className="text-lg font-black text-[#001834] mt-1 break-words">{bloodType}</p>
                             </div>
                             <div className="bg-surface-container-low p-5 rounded-xl border border-outline-variant/10">
                                 <span className="text-xs font-bold text-[#43474f] uppercase">Peso</span>
-                                <p className="text-lg font-black text-[#001834] mt-1">68.4 kg</p>
+                                <p className="text-lg font-black text-[#001834] mt-1 break-words">Desconocido</p>
                             </div>
                         </div>
                     </div>
@@ -44,9 +71,9 @@ export default function PatientLiveExtractionSidebar() {
                                 <div className="flex flex-col gap-3">
                                     <div className="flex items-center gap-2 bg-[#008542]/10 px-3 py-1.5 rounded-full w-max">
                                         <span className="material-symbols-outlined text-[#008542] text-[16px]">check_circle</span>
-                                        <span className="text-xs font-bold text-[#008542] uppercase tracking-widest">Validado</span>
+                                        <span className="text-xs font-bold text-[#008542] uppercase tracking-widest">Extraído de DB</span>
                                     </div>
-                                    <span className="text-[#001834] font-black text-2xl leading-tight">Penicilina, Cacahuates</span>
+                                    <span className="text-[#001834] font-black text-xl leading-tight">{allergies}</span>
                                 </div>
                                 <button className="absolute -right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-[#001834] text-white p-2 rounded-full shadow-md hover:scale-110 active:scale-95 duration-200">
                                     <span className="material-symbols-outlined text-sm">edit</span>

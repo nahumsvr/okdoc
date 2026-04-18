@@ -1,7 +1,57 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!email || !password) {
+      setError("Por favor completa todos los campos.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3001/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Error al iniciar sesión");
+      }
+
+      // Guardar el token (manejando posibles nombres de propiedad usados por NestJS)
+      const token = data.access_token || data.jwt || data.token;
+      if (token) {
+        localStorage.setItem("access_token", token);
+      } else {
+        console.warn(
+          "No se encontró el token de acceso en la respuesta de la API:",
+          data,
+        );
+      }
+
+      router.push("/patients/search");
+    } catch (err: any) {
+      setError(err.message || "Error de conexión");
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen items-center justify-center bg-surface font-sans p-6 overflow-hidden relative">
       {/* Background Decorative Element */}
@@ -9,7 +59,6 @@ export default function Home() {
       <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-[#C6A152]/10 rounded-full blur-3xl -z-10"></div>
 
       <main className="flex w-full max-w-md flex-col items-center bg-white p-12 rounded-[2rem] shadow-[0_24px_64px_-12px_rgba(0,45,88,0.15)] border border-outline-variant/20 z-10">
-        
         {/* Logo/Brand */}
         <div className="w-20 h-20 bg-[#002D58] rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-[#002D58]/20">
           <span className="material-symbols-outlined text-white text-[40px]">
@@ -29,35 +78,63 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Dummy Login Form */}
-        <div className="w-full space-y-5">
-          <div className="space-y-2">
-            <label className="block text-xs font-bold text-[#43474f] uppercase tracking-widest ml-1">ID Profesional</label>
-            <input 
-              type="text" 
-              defaultValue="DR-7845-MCP"
-              className="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface font-bold px-4 py-3 rounded-xl focus:outline-none focus:border-[#C6A152] focus:ring-1 focus:ring-[#C6A152] transition-all"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="block text-xs font-bold text-[#43474f] uppercase tracking-widest ml-1">Contraseña</label>
-            <input 
-              type="password" 
-              defaultValue="********"
-              className="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface font-bold px-4 py-3 rounded-xl focus:outline-none focus:border-[#C6A152] focus:ring-1 focus:ring-[#C6A152] transition-all"
-            />
-          </div>
-        </div>
+        {/* Login Form */}
+        <form className="w-full space-y-5" onSubmit={handleSubmit}>
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-xl flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">
+                error
+              </span>
+              <p>{error}</p>
+            </div>
+          )}
 
-        {/* Login Action (Link to Search Flow) */}
-        <div className="w-full mt-10">
-          <Link href="/patients/search" className="flex w-full items-center justify-center bg-[#002D58] text-white hover:bg-[#001834] transition-colors py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-xl shadow-[#001834]/20 active:translate-y-1">
-            Entrar al Sistema
-            <span className="material-symbols-outlined ml-2 text-[20px]">login</span>
-          </Link>
-        </div>
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-[#43474f] uppercase tracking-widest ml-1">
+              Correo Electrónico
+            </label>
+            <input
+              type="email"
+              placeholder="doctor@moscati.mx"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface font-bold px-4 py-3 rounded-xl focus:outline-none focus:border-[#C6A152] focus:ring-1 focus:ring-[#C6A152] transition-all"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-[#43474f] uppercase tracking-widest ml-1">
+              Contraseña
+            </label>
+            <input
+              type="password"
+              placeholder="********"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface font-bold px-4 py-3 rounded-xl focus:outline-none focus:border-[#C6A152] focus:ring-1 focus:ring-[#C6A152] transition-all"
+            />
+          </div>
+
+          <div className="w-full mt-10">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex w-full items-center justify-center bg-[#002D58] text-white hover:bg-[#001834] transition-colors py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-xl shadow-[#001834]/20 active:translate-y-1 disabled:opacity-70 disabled:active:translate-y-0"
+            >
+              {loading ? (
+                "Verificando..."
+              ) : (
+                <>
+                  Entrar al Sistema
+                  <span className="material-symbols-outlined ml-2 text-[20px]">
+                    login
+                  </span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </main>
-      
+
       <p className="text-xs font-semibold text-outline tracking-widest uppercase mt-12 text-center absolute bottom-8">
         Moscati Medical Systems © 2024
       </p>

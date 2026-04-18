@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 export type PatientStatus = "pending" | "validated";
@@ -7,9 +9,16 @@ export interface PatientResultProps {
   name: string;
   status: PatientStatus;
   lastUpdated: string;
+  raw?: any;
 }
 
 export function PatientResultCard({ patient }: { patient: PatientResultProps }) {
+  const handleClick = () => {
+    if (patient.raw) {
+      localStorage.setItem("selected_patient", JSON.stringify(patient.raw));
+    }
+  };
+
   const isPending = patient.status === "pending";
 
   const statusLabel = isPending ? "Revisión Pendiente" : "Validado";
@@ -20,7 +29,7 @@ export function PatientResultCard({ patient }: { patient: PatientResultProps }) 
   const iconName = isPending ? "pending_actions" : "check_circle";
 
   return (
-    <Link href={`/patients/${patient.id}`} className="block">
+    <Link href={`/patients/${patient.id}`} onClick={handleClick} className="block">
       <div
         className={`bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_16px_-4px_rgba(0,45,88,0.06)] hover:shadow-[0_8px_24px_-4px_rgba(0,45,88,0.1)] transition-all duration-300 flex items-center justify-between border-l-4 ${borderLeftClass} group`}
       >

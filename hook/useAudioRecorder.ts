@@ -1,83 +1,119 @@
 // hooks/useAudioRecorder.ts
-import { useState, useRef, useCallback } from 'react';
-import { useRecordingStore } from '../store/useRecordingStore';
+import { useState, useRef, useCallback, useEffect } from "react";
+import { io, Socket } from "socket.io-client";
+import { useRecordingStore } from "../store/useRecordingStore";
 
-export const useAudioRecorder = () => {
-    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<BlobPart[]>([]);
+export const useAudioRecorder = (patientId: string, doctorId: string) => {
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null,
+  );
 
-    // Ref para guardar el temporizador de nuestro simulador
-    const simulatorIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Usamos una sola referencia limpia para acumular todos los pedazos de audio
+  const audioChunksRef = useRef<Blob[]>([]);
+  const socketRef = useRef<Socket | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
 
-    // Traemos más funciones de Zustand para poder inyectar los datos falsos
-    const { startRecording, stopRecording, appendTranscription, addEntity } = useRecordingStore();
+  const {
+    startRecording,
+    stopRecording,
+    setTranscription, // Usamos setTranscription directo para evitar textos duplicados
+    setFormData,
+  } = useRecordingStore();
 
-    const start = useCallback(async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    socketRef.current = io(apiUrl);
+    const socket = socketRef.current;
 
-            recorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    audioChunksRef.current.push(event.data);
-                    // Aquí iría: socket.emit('audio_chunk', event.data);
-                }
-            };
+    socket.on("connect", () => console.log("🔗 WebSockets Conectado"));
 
-            recorder.onstop = () => {
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-                audioChunksRef.current = [];
-                stream.getTracks().forEach(track => track.stop());
+    socket.on(
+      "transcription_update",
+      (data: { text: string; source: string }) => {
+        // Reemplazamos el texto en pantalla con la transcripción acumulada más reciente
+        setTranscription(data.text);
+      },
+    );
 
-                // Apagamos el simulador cuando el doctor detiene la consulta
-                if (simulatorIntervalRef.current) {
-                    clearInterval(simulatorIntervalRef.current);
-                }
-            };
+    socket.on("form_complete", (data) => {
+      setTranscription(data.transcription);
+      if (data.form) setFormData(data.form);
+    });
 
-            recorder.start(1000);
-            setMediaRecorder(recorder);
-            startRecording();
+    socket.on("error", (error) => {
+      console.error("❌ Error backend:", error.message);
+    });
 
-            // 🤖 INICIO DEL SIMULADOR DE IA 🤖
-            // Cada 3 segundos simularemos que llega un mensaje del WebSocket
-            simulatorIntervalRef.current = setInterval(() => {
-                const frasesFalsas = [
-                    "El paciente refiere dolor punzante. ",
-                    "Presenta fiebre desde hace dos días. ",
-                    "Menciona alergia a la penicilina. ",
-                    "Presión arterial ligeramente elevada. "
-                ];
+    return () => {
+      socket.disconnect();
+    };
+  }, [setTranscription, setFormData]);
 
-                // 1. Simulamos que llega texto nuevo de Whisper
-                const fraseAleatoria = frasesFalsas[Math.floor(Math.random() * frasesFalsas.length)];
-                appendTranscription(fraseAleatoria);
+  const start = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (!socketRef.current?.connected) socketRef.current?.connect();
 
-                // 2. Simulamos que la IA extrajo una entidad médica (30% de probabilidad)
-                if (Math.random() > 0.7) {
-                    const entidadesFalsas = [
-                        { field: "Síntoma Principal", value: "Fiebre", confidence: 0.95 },
-                        { field: "Alergias", value: "Penicilina", confidence: 0.99 },
-                        { field: "CIE-10", value: "R50.9 (Fiebre no especificada)", confidence: 0.88 }
-                    ];
-                    const entidadAleatoria = entidadesFalsas[Math.floor(Math.random() * entidadesFalsas.length)];
-                    addEntity(entidadAleatoria);
-                }
-            }, 3000); // 3000ms = 3 segundos
+      sessionIdRef.current = `session_${Date.now()}`;
+      audioChunksRef.current = []; // Vaciamos el arreglo al iniciar una nueva grabación
 
-        } catch (error) {
-            console.error("Error al acceder al micrófono:", error);
-            alert("Para usar el asistente, debes permitir el acceso al micrófono en tu navegador.");
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : "audio/webm";
+
+      const recorder = new MediaRecorder(stream, { mimeType });
+
+      // LA MAGIA OCURRE AQUÍ ADENTRO
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          // 1. Acumulamos el chunk nuevo con los anteriores
+          audioChunksRef.current.push(event.data);
+
+          // 2. Creamos un solo archivo combinando todo lo que llevamos grabado
+          const combinedBlob = new Blob(audioChunksRef.current, {
+            type: mimeType,
+          });
+
+          // 3. Convertimos TODO el archivo a Base64 y lo mandamos (las cabeceras van intactas)
+          const reader = new FileReader();
+          reader.readAsDataURL(combinedBlob);
+          reader.onloadend = () => {
+            const base64Audio = (reader.result as string).split(",")[1];
+            socketRef.current?.emit("audio_chunk", {
+              sessionId: sessionIdRef.current,
+              audio: base64Audio,
+            });
+          };
         }
-    }, [startRecording, appendTranscription, addEntity]);
+      };
 
-    const stop = useCallback(() => {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-            setMediaRecorder(null);
-            stopRecording();
+      recorder.onstop = () => {
+        if (socketRef.current?.connected && sessionIdRef.current) {
+          // Nota: Si cambiaste tu backend para usar consultationId, actualiza este objeto.
+          socketRef.current.emit("finish_session", {
+            sessionId: sessionIdRef.current,
+            patientId,
+            doctorId,
+          });
         }
-    }, [mediaRecorder, stopRecording]);
+        stream.getTracks().forEach((track) => track.stop());
+      };
 
-    return { start, stop };
+      recorder.start(6000); // Dispara chunks cada 3 segundos
+      setMediaRecorder(recorder);
+      startRecording();
+    } catch (error) {
+      console.error("Error micrófono:", error);
+    }
+  }, [startRecording, patientId, doctorId]);
+
+  const stop = useCallback(() => {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+      setMediaRecorder(null);
+      stopRecording();
+    }
+  }, [mediaRecorder, stopRecording]);
+
+  return { start, stop };
 };
