@@ -29,7 +29,7 @@ export function PatientResultCard({ patient }: { patient: PatientResultProps }) 
   const iconName = isPending ? "pending_actions" : "check_circle";
 
   return (
-    <Link href={`/recording`} onClick={handleClick} className="block">
+    <Link href={`/patients/${patient.id}`} onClick={handleClick} className="block">
       <div
         className={`bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_16px_-4px_rgba(0,45,88,0.06)] hover:shadow-[0_8px_24px_-4px_rgba(0,45,88,0.1)] transition-all duration-300 flex items-center justify-between border-l-4 ${borderLeftClass} group`}
       >
