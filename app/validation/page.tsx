@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import Sidebar from "../components/moscati/Sidebar"
 import Topbar from "../components/moscati/Topbar"
 import FieldCard from "../components/moscati/FieldCard"
@@ -43,8 +44,13 @@ const FIELD_LABELS: Record<string, string> = {
 }
 
 export default function ValidationPage() {
+  const router = useRouter()
   const [report, setReport] = useState<Report>(MOCK_REPORT)
   const [filter, setFilter] = useState<"full" | "missing">("full")
+  const [isCompleted, setIsCompleted] = useState(false)
+
+  // Determina si mostrar una sección con base en el filtro
+  const showSection = (hasMissingItems: boolean) => filter === "full" || hasMissingItems;
 
   // Cuenta campos missing para el badge
   const missingCount = useMemo(() => {
@@ -61,21 +67,48 @@ export default function ValidationPage() {
   const handleStatusChange = (
     section: keyof Report,
     fieldKey: string,
-    newStatus: FieldStatus
+    newStatus: FieldStatus,
+    newValue?: string
   ) => {
-    setReport((prev) => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [fieldKey]: { ...(prev[section] as Record<string, ClinicalField>)[fieldKey], status: newStatus },
-      },
-    }))
+    setReport((prev) => {
+      const sectionData = prev[section] as Record<string, ClinicalField>;
+      return {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [fieldKey]: { 
+            ...sectionData[fieldKey], 
+            status: newStatus,
+            value: newValue !== undefined ? newValue : sectionData[fieldKey].value
+          },
+        },
+      }
+    })
   }
 
-  // Quick Fix: scroll al primer campo missing
-  const scrollToFirstMissing = () => {
-    const el = document.querySelector("[data-status='missing']")
-    el?.scrollIntoView({ behavior: "smooth", block: "center" })
+  // Quick Fix: Auto-rellena todos los missing con respuestas de la IA
+  const handleQuickFix = () => {
+    setReport((prev) => {
+      const updated = { ...prev }
+      
+      // Auto-fill atencionRequerida
+      if (updated.atencionRequerida.motivoConsulta.status === "missing") {
+        updated.atencionRequerida.motivoConsulta = { value: "Chequeo general preventivo", status: "suggested", confidence: 0.95 }
+      }
+      if (updated.atencionRequerida.antecedentesFamiliares.status === "missing") {
+        updated.atencionRequerida.antecedentesFamiliares = { value: "Madre con Diabetes Tipo 2", status: "suggested", confidence: 0.89 }
+      }
+      if (updated.atencionRequerida.alergiasConocidas.status === "missing") {
+        updated.atencionRequerida.alergiasConocidas = { value: "Ninguna conocida (Reportado por paciente)", status: "suggested", confidence: 0.99 }
+      }
+      
+      return updated
+    })
+    setFilter("full")
+  }
+
+  const handleCompleteValidation = () => {
+    setIsCompleted(true)
   }
 
   return (
@@ -88,6 +121,7 @@ export default function ValidationPage() {
           filter={filter}
           onFilterChange={setFilter}
           missingCount={missingCount}
+          onCompleteValidation={handleCompleteValidation}
         />
 
         <main className="flex-1 overflow-y-auto px-8 py-8 w-full max-w-4xl mx-auto">
@@ -113,14 +147,14 @@ export default function ValidationPage() {
                 )}
               </div>
 
-              {Object.entries(report.atencionRequerida)
+                {Object.entries(report.atencionRequerida)
                 .filter(([, f]) => filter === "full" || f.status === "missing")
                 .map(([key, field]) => (
                   <div key={key} data-status={field.status}>
                     <FieldCard
                       label={FIELD_LABELS[key]}
                       field={field}
-                      onStatusChange={(s) => handleStatusChange("atencionRequerida", key, s)}
+                      onStatusChange={(s, val) => handleStatusChange("atencionRequerida", key, s, val)}
                     />
                   </div>
                 ))}
@@ -145,7 +179,7 @@ export default function ValidationPage() {
                   key={key}
                   label={FIELD_LABELS[key]}
                   field={field}
-                  onStatusChange={(s) => handleStatusChange("revisionGeneral", key, s)}
+                  onStatusChange={(s, val) => handleStatusChange("revisionGeneral", key, s, val)}
                 />
               ))}
             </section>
@@ -171,7 +205,7 @@ export default function ValidationPage() {
                   key={key}
                   label={FIELD_LABELS[key]}
                   field={field}
-                  onStatusChange={(s) => handleStatusChange("datosConfirmados", key, s)}
+                  onStatusChange={(s, val) => handleStatusChange("datosConfirmados", key, s, val)}
                 />
               ))}
             </section>
@@ -184,20 +218,36 @@ export default function ValidationPage() {
       {/* Quick Fix flotante (Diseño Limpio) */}
       {missingCount > 0 && (
         <button
-          onClick={scrollToFirstMissing}
-          className="fixed bottom-8 right-10 bg-[#002D58] hover:bg-[#003a70] text-white font-bold rounded-2xl px-6 py-4 flex items-center gap-3 shadow-xl transition-all hover:scale-105 hover:shadow-2xl"
+          onClick={handleQuickFix}
+          className="fixed bottom-8 right-10 bg-gradient-to-r from-[#002D58] to-[#C6A152] text-white font-bold rounded-2xl px-6 py-4 flex items-center gap-3 shadow-[0_10px_40px_-10px_rgba(198,161,82,0.5)] transition-all hover:scale-105"
         >
           <div className="flex flex-col text-left">
-            <span className="text-[10px] text-blue-200 font-semibold tracking-widest uppercase opacity-90">Siguiente Paso</span>
-            <span className="text-sm">Quick Fix</span>
+            <span className="text-[10px] text-white/80 font-semibold tracking-widest uppercase">Auto Resolución IA</span>
+            <span className="text-sm">Rellenar Info Faltante</span>
           </div>
-          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-              <polyline points="13 17 18 12 13 7" />
-              <polyline points="6 17 11 12 6 7" />
-            </svg>
+          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+            <span className="material-symbols-outlined text-white text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
           </div>
         </button>
+      )}
+
+      {/* Modal De Validación Completa */}
+      {isCompleted && (
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl flex flex-col items-center text-center animate-in zoom-in-95 duration-300">
+             <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-500 mb-6 shadow-inner">
+               <span className="material-symbols-outlined text-4xl font-bold">check_circle</span>
+             </div>
+             <h3 className="text-2xl font-extrabold text-[#002D58] mb-2">Validación Exitosa</h3>
+             <p className="text-sm font-medium text-gray-500 mb-8">El reporte de Juan Pérez se ha firmado y sincronizado con Moscati Clinical Precision.</p>
+             <button onClick={() => router.push('/reports')} className="w-full bg-[#002D58] hover:bg-[#001834] text-white font-bold py-3.5 rounded-xl transition-all shadow-md active:scale-95">
+                Ir a Reportes Archivos
+             </button>
+             <button onClick={() => setIsCompleted(false)} className="w-full mt-3 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors">
+                Seguir Editando
+             </button>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -7,9 +7,10 @@ interface TopbarProps {
   filter: "full" | "missing"
   onFilterChange: (f: "full" | "missing") => void
   missingCount: number
+  onCompleteValidation: () => void
 }
 
-export default function Topbar({ patient, filter, onFilterChange, missingCount }: TopbarProps) {
+export default function Topbar({ patient, filter, onFilterChange, missingCount, onCompleteValidation }: TopbarProps) {
   return (
     <header className="h-14 bg-white border-b border-gray-200 px-6 flex items-center justify-between flex-shrink-0">
       {/* Patient info */}
@@ -51,7 +52,7 @@ export default function Topbar({ patient, filter, onFilterChange, missingCount }
           </button>
         </div>
 
-        <button className="bg-[#002D58] hover:bg-[#003a70] text-white text-[13px] font-semibold px-4 py-2 rounded-lg transition-colors">
+        <button onClick={onCompleteValidation} className="bg-[#002D58] hover:bg-[#003a70] text-white text-[13px] font-semibold px-4 py-2 rounded-lg transition-colors">
           Complete Validation
         </button>
 

@@ -7,7 +7,7 @@ import FieldActions from "./FieldActions"
 interface FieldCardProps {
   label: string
   field: ClinicalField
-  onStatusChange: (newStatus: "validated") => void
+  onStatusChange: (newStatus: "validated", newValue?: string) => void
 }
 
 export default function FieldCard({ label, field, onStatusChange }: FieldCardProps) {
@@ -15,12 +15,11 @@ export default function FieldCard({ label, field, onStatusChange }: FieldCardPro
   const [localValue, setLocalValue] = useState(field.value ?? "")
   const [currentField, setCurrentField] = useState<ClinicalField>(field)
 
-  const styles = statusStyles[currentField.status as keyof typeof statusStyles] || statusStyles.missing
-
   const handleConfirm = () => {
-    setCurrentField({ ...currentField, status: "validated", value: localValue || currentField.value })
+    const newValue = localValue || currentField.value;
+    setCurrentField({ ...currentField, status: "validated", value: newValue })
     setEditing(false)
-    onStatusChange("validated")
+    onStatusChange("validated", newValue)
   }
 
   const handleEdit = () => {
