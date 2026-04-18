@@ -74,9 +74,17 @@ export default function PatientSearchPage() {
             
             {/* Search Section */}
             <section>
-              <h1 className="text-3xl font-bold font-headline text-on-surface mb-2">
-                Búsqueda de Pacientes
-              </h1>
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                <h1 className="text-3xl font-bold font-headline text-on-surface">
+                  Búsqueda de Pacientes
+                </h1>
+                <a 
+                  href="/patients/new"
+                  className="mt-4 md:mt-0 text-sm bg-primary-container text-white py-2 px-4 rounded-lg font-medium hover:bg-[#001834] transition-colors inline-block text-center shadow-[0_4px_12px_rgba(0,45,88,0.2)]"
+                >
+                  + Agregar Paciente
+                </a>
+              </div>
               <p className="text-on-surface-variant font-body mb-8 max-w-2xl">
                 Ingrese los criterios de búsqueda para localizar un registro clínico en el sistema Moscati Clinical Precision.
               </p>
