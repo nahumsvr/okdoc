@@ -8,9 +8,10 @@ export default function RecordButton({
   patientId,
   doctorId,
 }: {
-  patientId?: string;
-  doctorId?: string;
+  patientId: string;
+  doctorId: string;
 }) {
+  console.log(patientId, doctorId);
   const { isRecording } = useRecordingStore();
   // Pasamos los IDs al hook para que el backend sepa a quién guardar la consulta
   const { start, stop } = useAudioRecorder(patientId, doctorId);

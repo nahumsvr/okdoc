@@ -3,68 +3,59 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 import { useRecordingStore } from "../store/useRecordingStore";
 
-export const useAudioRecorder = (patientId?: string, doctorId?: string) => {
+export const useAudioRecorder = (patientId: string, doctorId: string) => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
   );
+
+  // Usamos una sola referencia limpia para acumular todos los pedazos de audio
+  const audioChunksRef = useRef<Blob[]>([]);
   const socketRef = useRef<Socket | null>(null);
   const sessionIdRef = useRef<string | null>(null);
 
   const {
     startRecording,
     stopRecording,
-    appendTranscription,
-    setTranscription,
+    setTranscription, // Usamos setTranscription directo para evitar textos duplicados
     setFormData,
   } = useRecordingStore();
 
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
     socketRef.current = io(apiUrl);
-
     const socket = socketRef.current;
 
-    socket.on("connect", () => {
-      console.log("🔗 Conectado al servidor de WebSockets");
-    });
+    socket.on("connect", () => console.log("🔗 WebSockets Conectado"));
 
-    // CAMBIO: El evento ahora se llama 'transcription_update'
     socket.on(
       "transcription_update",
       (data: { text: string; source: string }) => {
-        console.log("📝 Texto recibido:", data.text);
-        appendTranscription(data.text);
+        // Reemplazamos el texto en pantalla con la transcripción acumulada más reciente
+        setTranscription(data.text);
       },
     );
 
     socket.on("form_complete", (data) => {
-      // Recibimos el texto final acumulado y el JSON de la IA
       setTranscription(data.transcription);
-      if (data.form) {
-        setFormData(data.form);
-      }
-      console.log("🏆 Formulario generado:", data.form);
+      if (data.form) setFormData(data.form);
     });
 
     socket.on("error", (error) => {
-      console.error("❌ Error desde WebSockets:", error.message);
+      console.error("❌ Error backend:", error.message);
     });
 
     return () => {
       socket.disconnect();
     };
-  }, [appendTranscription, setTranscription, setFormData]);
+  }, [setTranscription, setFormData]);
 
   const start = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (!socketRef.current?.connected) socketRef.current?.connect();
 
-      if (!socketRef.current?.connected) {
-        socketRef.current?.connect();
-      }
-
-      // Generamos un sessionId único
       sessionIdRef.current = `session_${Date.now()}`;
+      audioChunksRef.current = []; // Vaciamos el arreglo al iniciar una nueva grabación
 
       const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
         ? "audio/webm;codecs=opus"
@@ -72,17 +63,22 @@ export const useAudioRecorder = (patientId?: string, doctorId?: string) => {
 
       const recorder = new MediaRecorder(stream, { mimeType });
 
+      // LA MAGIA OCURRE AQUÍ ADENTRO
       recorder.ondataavailable = (event) => {
-        if (
-          event.data.size > 0 &&
-          socketRef.current?.connected &&
-          sessionIdRef.current
-        ) {
+        if (event.data.size > 0) {
+          // 1. Acumulamos el chunk nuevo con los anteriores
+          audioChunksRef.current.push(event.data);
+
+          // 2. Creamos un solo archivo combinando todo lo que llevamos grabado
+          const combinedBlob = new Blob(audioChunksRef.current, {
+            type: mimeType,
+          });
+
+          // 3. Convertimos TODO el archivo a Base64 y lo mandamos (las cabeceras van intactas)
           const reader = new FileReader();
-          reader.readAsDataURL(event.data);
+          reader.readAsDataURL(combinedBlob);
           reader.onloadend = () => {
             const base64Audio = (reader.result as string).split(",")[1];
-            // Enviamos el chunk al backend
             socketRef.current?.emit("audio_chunk", {
               sessionId: sessionIdRef.current,
               audio: base64Audio,
@@ -93,7 +89,7 @@ export const useAudioRecorder = (patientId?: string, doctorId?: string) => {
 
       recorder.onstop = () => {
         if (socketRef.current?.connected && sessionIdRef.current) {
-          // CAMBIO: Ahora enviamos patientId y doctorId al finalizar
+          // Nota: Si cambiaste tu backend para usar consultationId, actualiza este objeto.
           socketRef.current.emit("finish_session", {
             sessionId: sessionIdRef.current,
             patientId,
@@ -103,12 +99,11 @@ export const useAudioRecorder = (patientId?: string, doctorId?: string) => {
         stream.getTracks().forEach((track) => track.stop());
       };
 
-      // Recoger audio cada 3-5 segundos es mejor para transcripción no-streaming
-      recorder.start(4000);
+      recorder.start(6000); // Dispara chunks cada 3 segundos
       setMediaRecorder(recorder);
       startRecording();
     } catch (error) {
-      console.error("Error al acceder al micrófono:", error);
+      console.error("Error micrófono:", error);
     }
   }, [startRecording, patientId, doctorId]);
 
