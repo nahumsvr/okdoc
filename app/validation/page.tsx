@@ -4,7 +4,7 @@ import { useState, useMemo } from "react"
 import Sidebar from "../components/moscati/Sidebar"
 import Topbar from "../components/moscati/Topbar"
 import FieldCard from "../components/moscati/FieldCard"
-import { Report, FieldStatus } from "@/types/moscati"
+import { Report, FieldStatus, ClinicalField } from "../components/moscati/types/moscati"
 
 // --- MOCK DATA --- reemplazar con fetch al endpoint de Back 1
 const MOCK_REPORT: Report = {
@@ -79,7 +79,7 @@ export default function ValidationPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F9F9F9]">
+    <div className="flex h-screen overflow-hidden bg-gray-50 font-sans">
       <Sidebar />
 
       <div className="flex flex-col flex-1 overflow-hidden">
@@ -90,22 +90,24 @@ export default function ValidationPage() {
           missingCount={missingCount}
         />
 
-        <main className="flex-1 overflow-y-auto px-8 py-6">
+        <main className="flex-1 overflow-y-auto px-8 py-8 w-full max-w-4xl mx-auto">
 
           {/* SECCIÓN: Atención Requerida */}
-          {(filter === "full" || missingCount > 0) && (
-            <section className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="flex items-center gap-2.5 text-lg font-bold text-gray-900" style={{ fontFamily: "Manrope, sans-serif" }}>
-                  <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                  </svg>
+          {showSection(missingCount > 0) && (
+            <section className="mb-10">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="flex items-center gap-2.5 text-xl font-bold text-gray-900">
+                  <div className="p-1.5 bg-red-50 rounded-lg">
+                    <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="8" x2="12" y2="12" />
+                      <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                  </div>
                   Atención Requerida
                 </h2>
                 {missingCount > 0 && (
-                  <span className="bg-red-100 text-red-600 text-[11px] font-bold px-3 py-1 rounded-full">
+                  <span className="bg-red-50 text-red-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-50">
                     {missingCount} MISSING FIELDS
                   </span>
                 )}
@@ -127,13 +129,15 @@ export default function ValidationPage() {
 
           {/* SECCIÓN: Revisión General — AI Generated */}
           {filter === "full" && (
-            <section className="mb-8">
-              <div className="flex items-center gap-2.5 mb-4">
-                <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900" style={{ fontFamily: "Manrope, sans-serif" }}>
-                  <span className="text-base">✦</span>
+            <section className="mb-10">
+              <div className="flex items-center gap-3 mb-5">
+                <h2 className="flex items-center gap-2.5 text-xl font-bold text-gray-900">
+                  <div className="p-1.5 bg-blue-50 rounded-lg text-blue-500 font-black">
+                    ✦
+                  </div>
                   Revisión General
                 </h2>
-                <span className="text-sm font-medium text-gray-400">(AI Generated)</span>
+                <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">AI Generated</span>
               </div>
 
               {Object.entries(report.revisionGeneral).map(([key, field]) => (
@@ -149,13 +153,15 @@ export default function ValidationPage() {
 
           {/* SECCIÓN: Datos Confirmados */}
           {filter === "full" && (
-            <section className="mb-8">
-              <div className="flex items-center gap-2.5 mb-4">
-                <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900" style={{ fontFamily: "Manrope, sans-serif" }}>
-                  <svg className="w-5 h-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                    <polyline points="22 4 12 14.01 9 11.01" />
-                  </svg>
+            <section className="mb-10">
+              <div className="flex items-center gap-2.5 mb-5">
+                <h2 className="flex items-center gap-2.5 text-xl font-bold text-gray-900">
+                  <div className="p-1.5 bg-emerald-50 rounded-lg">
+                    <svg className="w-5 h-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                      <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                  </div>
                   Datos Confirmados
                 </h2>
               </div>
@@ -175,20 +181,22 @@ export default function ValidationPage() {
         </main>
       </div>
 
-      {/* Quick Fix flotante */}
+      {/* Quick Fix flotante (Diseño Limpio) */}
       {missingCount > 0 && (
         <button
           onClick={scrollToFirstMissing}
-          className="fixed bottom-6 right-8 bg-[#C6A152] hover:bg-[#b8913f] text-white font-bold rounded-xl px-5 py-3 flex flex-col items-center gap-0.5 shadow-lg transition-colors"
+          className="fixed bottom-8 right-10 bg-[#002D58] hover:bg-[#003a70] text-white font-bold rounded-2xl px-6 py-4 flex items-center gap-3 shadow-xl transition-all hover:scale-105 hover:shadow-2xl"
         >
-          <span className="text-[9px] font-semibold tracking-widest uppercase opacity-80">Next Step</span>
-          <span className="flex items-center gap-1.5 text-sm">
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2.5}>
+          <div className="flex flex-col text-left">
+            <span className="text-[10px] text-blue-200 font-semibold tracking-widest uppercase opacity-90">Siguiente Paso</span>
+            <span className="text-sm">Quick Fix</span>
+          </div>
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <polyline points="13 17 18 12 13 7" />
               <polyline points="6 17 11 12 6 7" />
             </svg>
-            Quick Fix
-          </span>
+          </div>
         </button>
       )}
     </div>

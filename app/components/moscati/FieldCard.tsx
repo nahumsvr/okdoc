@@ -10,24 +10,6 @@ interface FieldCardProps {
   onStatusChange: (newStatus: "validated") => void
 }
 
-const statusStyles = {
-  missing: {
-    card: "border-l-4 border-l-red-500 bg-red-50",
-    label: "text-red-600",
-    value: "text-red-500 italic",
-  },
-  suggested: {
-    card: "border-l-4 border-l-amber-400 bg-amber-50/50",
-    label: "text-amber-600",
-    value: "text-gray-900",
-  },
-  validated: {
-    card: "border-l-4 border-l-emerald-500 bg-emerald-50/40",
-    label: "text-emerald-600",
-    value: "text-gray-900",
-  },
-}
-
 export default function FieldCard({ label, field, onStatusChange }: FieldCardProps) {
   const [editing, setEditing] = useState(false)
   const [localValue, setLocalValue] = useState(field.value ?? "")
@@ -46,68 +28,80 @@ export default function FieldCard({ label, field, onStatusChange }: FieldCardPro
   }
 
   const handlePlay = () => {
-    // Front 2 conectará esto con WebSockets / audio
     console.log("play audio for:", label)
   }
 
   const displayValue = localValue || currentField.value
 
+  const isMissing = currentField.status === "missing"
+  const isSuggested = currentField.status === "suggested"
+  const isValidated = currentField.status === "validated"
+
   return (
-    <div className={`rounded-lg border border-gray-200 p-4 mb-3 transition-all duration-200 ${styles.card}`}>
-      {/* Label */}
-      <p className={`text-[10px] font-semibold tracking-widest uppercase mb-1.5 ${styles.label}`}>
-        {label}
-      </p>
+    <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-5 mb-4 transition-all duration-200">
 
-      {/* Confidence badge — solo en suggested */}
-      {currentField.status === "suggested" && currentField.confidence && (
-        <span className="inline-block text-[10px] font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full mb-2">
-          {Math.round(currentField.confidence * 100)}% conf.
-        </span>
-      )}
+      {/* Header of the card */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <p className="text-xs font-semibold tracking-widest uppercase text-gray-500">
+            {label}
+          </p>
+          {isMissing && (
+            <span className="inline-flex items-center gap-1 bg-red-50 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-md">
+              MISSING
+            </span>
+          )}
+          {isSuggested && (
+            <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-500 text-[10px] font-bold px-2 py-0.5 rounded-md">
+              AI SUGGESTED
+            </span>
+          )}
+          {isValidated && (
+            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-500 text-[10px] font-bold px-2 py-0.5 rounded-md">
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              CONFIRMED
+            </span>
+          )}
+        </div>
+        {/* Confidence Meta */}
+        {isSuggested && currentField.confidence && (
+          <span className="text-[10px] font-medium text-gray-400">
+            {Math.round(currentField.confidence * 100)}% conf.
+          </span>
+        )}
+      </div>
 
-      {/* Value / input editable */}
-      {editing ? (
-        <input
-          autoFocus
-          value={localValue}
-          onChange={(e) => setLocalValue(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleConfirm()}
-          placeholder="Ingresar información manualmente..."
-          className="w-full text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#002D58] mb-1"
+      {/* Content */}
+      <div className="mb-2">
+        {editing ? (
+          <input
+            autoFocus
+            value={localValue}
+            onChange={(e) => setLocalValue(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleConfirm()}
+            placeholder="Ingresar información manualmente..."
+            className="w-full text-sm font-medium text-gray-900 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#002D58] focus:bg-white transition-colors"
+          />
+        ) : (
+          <p className={`text-sm font-medium leading-relaxed ${isMissing && !displayValue ? "text-red-400 italic" : "text-gray-900"}`}>
+            {isMissing && !displayValue
+              ? "Información no encontrada en el audio."
+              : displayValue}
+          </p>
+        )}
+      </div>
+
+      {/* Actions Section */}
+      <div className="border-t border-gray-50 mt-3 pt-1">
+        <FieldActions
+          status={currentField.status}
+          onConfirm={handleConfirm}
+          onEdit={handleEdit}
+          onPlay={handlePlay}
         />
-      ) : (
-        <p className={`text-sm font-medium mb-1 ${styles.value}`}>
-          {currentField.status === "missing" && !displayValue
-            ? "Información no encontrada en el audio"
-            : displayValue}
-        </p>
-      )}
-
-      {/* Meta — solo en suggested */}
-      {currentField.status === "suggested" && (
-        <p className="text-[11px] text-gray-400 mb-1">
-          AI Suggestion — pendiente de validación humana
-        </p>
-      )}
-
-      {/* Confirmed badge — solo en validated */}
-      {currentField.status === "validated" && (
-        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full mb-1">
-          <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          CONFIRMED
-        </span>
-      )}
-
-      {/* Actions */}
-      <FieldActions
-        status={currentField.status}
-        onConfirm={handleConfirm}
-        onEdit={handleEdit}
-        onPlay={handlePlay}
-      />
+      </div>
     </div>
   )
 }

@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./app/*"]
+      "@/*": ["./*"],
+      "@/types/*": ["./app/components/moscati/types/*"]
     }
   },
   "include": [
