@@ -1,8 +1,6 @@
 import React from "react"
 
-interface EditButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
-
-export function EditButton(props: EditButtonProps) {
+export function EditButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       title="Editar manualmente"

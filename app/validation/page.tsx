@@ -50,7 +50,7 @@ export default function ValidationPage() {
   const missingCount = useMemo(() => {
     let count = 0
     Object.values(report).forEach((section) => {
-      Object.values(section as any).forEach((field: any) => {
+      Object.values(section).forEach((field) => {
         if (field.status === "missing") count++
       })
     })
@@ -67,7 +67,7 @@ export default function ValidationPage() {
       ...prev,
       [section]: {
         ...prev[section],
-        [fieldKey]: { ...(prev[section] as any)[fieldKey], status: newStatus },
+        [fieldKey]: { ...(prev[section] as Record<string, ClinicalField>)[fieldKey], status: newStatus },
       },
     }))
   }
@@ -77,8 +77,6 @@ export default function ValidationPage() {
     const el = document.querySelector("[data-status='missing']")
     el?.scrollIntoView({ behavior: "smooth", block: "center" })
   }
-
-  const showSection = (hasFields: boolean) => filter === "full" || hasFields
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 font-sans">

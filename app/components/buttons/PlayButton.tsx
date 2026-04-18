@@ -1,8 +1,6 @@
 import React from "react"
 
-interface PlayButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
-
-export function PlayButton(props: PlayButtonProps) {
+export function PlayButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       title="Reproducir audio"
