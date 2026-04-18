@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react"
-import Sidebar from "@/components/moscati/Sidebar"
-import Topbar from "@/components/moscati/Topbar"
-import FieldCard from "@/components/moscati/FieldCard"
+import Sidebar from "../components/moscati/Sidebar"
+import Topbar from "../components/moscati/Topbar"
+import FieldCard from "../components/moscati/FieldCard"
 import { Report, FieldStatus, ClinicalField } from "@/types/moscati"
 
 // --- MOCK DATA --- reemplazar con fetch al endpoint de Back 1
@@ -50,8 +50,8 @@ export default function ValidationPage() {
   const missingCount = useMemo(() => {
     let count = 0
     Object.values(report).forEach((section) => {
-    Object.values(section as any).forEach((field: any) => {
-          if (field.status === "missing") count++
+      Object.values(section as any).forEach((field: any) => {
+        if (field.status === "missing") count++
       })
     })
     return count
@@ -67,7 +67,8 @@ export default function ValidationPage() {
       ...prev,
       [section]: {
         ...prev[section],
-[fieldKey]: { ...(prev[section] as any)[fieldKey], status: newStatus },      },
+        [fieldKey]: { ...(prev[section] as any)[fieldKey], status: newStatus },
+      },
     }))
   }
 
