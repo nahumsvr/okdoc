@@ -16,7 +16,9 @@ export default function NewPatientPage() {
   });
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -27,7 +29,7 @@ export default function NewPatientPage() {
 
     const token = localStorage.getItem("access_token");
     try {
-      const response = await fetch("http://localhost:3000/patients", {
+      const response = await fetch("http://localhost:3001/patients", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,7 +38,12 @@ export default function NewPatientPage() {
         body: JSON.stringify({
           nombre: formData.nombre,
           fechaNacimiento: new Date(formData.fechaNacimiento).toISOString(),
-          genero: formData.genero === "Masculino" ? "h" : formData.genero === "Femenino" ? "m" : "o",
+          genero:
+            formData.genero === "Masculino"
+              ? "h"
+              : formData.genero === "Femenino"
+                ? "m"
+                : "o",
           telefono: formData.telefono,
         }),
       });
@@ -45,7 +52,10 @@ export default function NewPatientPage() {
         router.push("/patients/search");
       } else {
         const error = await response.json();
-        alert("Error al registrar paciente: " + (error.message || "Verifique los datos"));
+        alert(
+          "Error al registrar paciente: " +
+            (error.message || "Verifique los datos"),
+        );
       }
     } catch (err) {
       console.error(err);
@@ -58,10 +68,10 @@ export default function NewPatientPage() {
   return (
     <div className="bg-surface text-on-surface h-screen overflow-hidden flex flex-col antialiased">
       <SearchHeader />
-      
+
       <div className="flex flex-1 overflow-hidden h-full relative">
         <Sidebar />
-        
+
         <main className="flex-1 overflow-y-auto bg-surface p-8 xl:p-12">
           <div className="max-w-3xl mx-auto space-y-8">
             <section>
@@ -78,21 +88,30 @@ export default function NewPatientPage() {
                 </button>
               </div>
               <p className="text-on-surface-variant font-body mb-8">
-                Llene los campos para dar de alta al paciente en el sistema Moscati.
+                Llene los campos para dar de alta al paciente en el sistema
+                Moscati.
               </p>
-              
-              <form onSubmit={handleSubmit} className="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15 space-y-6">
+
+              <form
+                onSubmit={handleSubmit}
+                className="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15 space-y-6"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <SearchInput 
-                    label="Nombre" 
-                    id="nombre" 
+                  <SearchInput
+                    label="Nombre"
+                    id="nombre"
                     name="nombre"
                     required
                     value={formData.nombre}
                     onChange={handleChange}
                   />
                   <div className="w-full">
-                    <label className="block text-sm font-medium text-on-surface-variant mb-2" htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
+                    <label
+                      className="block text-sm font-medium text-on-surface-variant mb-2"
+                      htmlFor="fechaNacimiento"
+                    >
+                      Fecha de Nacimiento
+                    </label>
                     <input
                       id="fechaNacimiento"
                       name="fechaNacimiento"
@@ -103,15 +122,20 @@ export default function NewPatientPage() {
                       className="w-full bg-surface-container-high border-0 border-b-2 border-outline text-on-surface focus:ring-0 focus:border-primary-container p-3 rounded-t transition-colors"
                     />
                   </div>
-                  <SearchInput 
-                    label="Teléfono (Opcional)" 
-                    id="telefono" 
+                  <SearchInput
+                    label="Teléfono (Opcional)"
+                    id="telefono"
                     name="telefono"
                     value={formData.telefono}
                     onChange={handleChange}
                   />
                   <div className="w-full">
-                    <label className="block text-sm font-medium text-on-surface-variant mb-2" htmlFor="genero">Género</label>
+                    <label
+                      className="block text-sm font-medium text-on-surface-variant mb-2"
+                      htmlFor="genero"
+                    >
+                      Género
+                    </label>
                     <select
                       id="genero"
                       name="genero"

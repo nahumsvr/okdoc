@@ -59,7 +59,7 @@ export default function ValidationPage() {
       if (!token) return;
 
       try {
-        const response = await fetch("http://localhost:3000/auth/profile", {
+        const response = await fetch("http://localhost:3001/auth/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
