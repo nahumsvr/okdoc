@@ -10,7 +10,7 @@ export interface ReportSection {
   [key: string]: ClinicalField
 }
 
-export default interface Report {
+export interface Report {
   atencionRequerida: {
     motivoConsulta: ClinicalField
     antecedentesFamiliares: ClinicalField
