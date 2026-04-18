@@ -1,4 +1,3 @@
-
 import React from "react";
 import Image from "next/image";
 
@@ -9,39 +8,23 @@ export function SearchHeader() {
         <span className="text-2xl font-black text-[#002D58] font-manrope normal-case tracking-normal">
           OkDoc
         </span>
-        <nav className="hidden md:flex h-full items-center space-x-6">
-          <a
-            className="text-slate-500 hover:text-[#C6A152] transition-colors duration-200 h-full flex items-center scale-95 active:opacity-80 transition-transform"
-            href="#"
-          >
-            Panel Principal
-          </a>
-          <a
-            className="text-slate-500 hover:text-[#C6A152] transition-colors duration-200 h-full flex items-center scale-95 active:opacity-80 transition-transform"
-            href="#"
-          >
-            Registro de Pacientes
-          </a>
-          <a
-            className="text-slate-500 hover:text-[#C6A152] transition-colors duration-200 h-full flex items-center scale-95 active:opacity-80 transition-transform"
-            href="#"
-          >
-            Cola de Validación
-          </a>
-        </nav>
       </div>
       <div className="flex items-center space-x-4">
         <button
           aria-label="notifications"
           className="text-[#002D58] hover:text-[#C6A152] transition-colors duration-200 scale-95 active:opacity-80 transition-transform"
         >
-          <span className="material-symbols-outlined text-[24px]">notifications</span>
+          <span className="material-symbols-outlined text-[24px]">
+            notifications
+          </span>
         </button>
         <button
           aria-label="settings"
           className="text-[#002D58] hover:text-[#C6A152] transition-colors duration-200 scale-95 active:opacity-80 transition-transform"
         >
-          <span className="material-symbols-outlined text-[24px]">settings</span>
+          <span className="material-symbols-outlined text-[24px]">
+            settings
+          </span>
         </button>
         <img
           alt="Clinician Profile"
