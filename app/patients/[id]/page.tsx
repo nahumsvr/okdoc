@@ -245,9 +245,9 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       {/* Bottom Action Bar */}
       <nav className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md flex justify-center items-center px-4 py-3 border-t border-outline-variant/30 z-40">
         <div className="w-full max-w-7xl mx-auto flex justify-center">
-          <button className="w-full md:w-auto bg-[#002D58] hover:bg-[#002D58]/90 text-white font-extrabold py-4 px-12 rounded-xl shadow-lg transition-all active:translate-y-1 tracking-wide">
+          <Link href="/recording" className="w-full md:w-auto bg-[#002D58] hover:bg-[#002D58]/90 text-white font-extrabold py-4 px-12 text-center rounded-xl shadow-lg transition-all active:translate-y-1 tracking-wide uppercase">
             NUEVA CONSULTA
-          </button>
+          </Link>
         </div>
       </nav>
     </div>

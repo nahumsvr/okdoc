@@ -5,7 +5,17 @@ import { usePathname } from "next/navigation"
 
 const navItems = [
   {
-    label: "Patient Queue",
+    label: "Búsqueda de Pacientes",
+    href: "/patients/search",
+    icon: (
+      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" />
+      </svg>
+    ),
+  },
+  {
+    label: "Panel de Validación",
     href: "/validation",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -16,21 +26,24 @@ const navItems = [
     ),
   },
   {
+    label: "Borradores",
+    href: "/drafts",
+    icon: (
+      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6" />
+        <path d="M16 13H8" />
+        <path d="M16 17H8" />
+        <path d="M10 9H8" />
+      </svg>
+    ),
+  },
+  {
     label: "Clinical Data",
     href: "/clinical-data",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
         <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
-  },
-  {
-    label: "Imaging",
-    href: "/imaging",
-    icon: (
-      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M3 9h18M9 21V9" />
       </svg>
     ),
   },

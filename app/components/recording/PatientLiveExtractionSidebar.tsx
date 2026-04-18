@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export default function PatientLiveExtractionSidebar() {
     return (
@@ -75,9 +76,9 @@ export default function PatientLiveExtractionSidebar() {
                     </div>
 
                     {/* Final Action */}
-                    <button className="w-full mt-12 py-5 bg-[#002D58] hover:bg-[#001834] text-white rounded-2xl font-black font-headline uppercase tracking-widest text-base hover:opacity-90 transition-all shadow-xl shadow-[#001834]/20 active:scale-95">
+                    <Link href="/formulario" className="w-full flex items-center justify-center mt-12 py-5 bg-[#002D58] hover:bg-[#001834] text-white rounded-2xl font-black font-headline uppercase tracking-widest text-base hover:opacity-90 transition-all shadow-xl shadow-[#001834]/20 active:scale-95">
                         Generar Reporte de Consulta
-                    </button>
+                    </Link>
                 </div>
             </div>
         </aside>
