@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ClinicalField } from "@/types/moscati"
+import { ClinicalField } from "./types/moscati"
 import FieldActions from "./FieldActions"
 
 interface FieldCardProps {

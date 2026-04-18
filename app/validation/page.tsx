@@ -4,7 +4,7 @@ import { useState, useMemo } from "react"
 import Sidebar from "../components/moscati/Sidebar"
 import Topbar from "../components/moscati/Topbar"
 import FieldCard from "../components/moscati/FieldCard"
-import { Report, FieldStatus, ClinicalField } from "@/types/moscati"
+import { Report, FieldStatus, ClinicalField } from "../components/moscati/types/moscati"
 
 // --- MOCK DATA --- reemplazar con fetch al endpoint de Back 1
 const MOCK_REPORT: Report = {

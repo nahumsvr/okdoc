@@ -1,6 +1,6 @@
 "use client"
 
-import { FieldStatus } from "@/types/moscati"
+import { FieldStatus } from "./types/moscati";
 
 interface FieldActionsProps {
   status: FieldStatus
@@ -14,15 +14,15 @@ export default function FieldActions({ status, onConfirm, onEdit, onPlay }: Fiel
     status === "missing"
       ? "bg-red-50 border-red-300 hover:bg-red-100"
       : status === "suggested"
-      ? "bg-[#002D58] border-[#002D58] hover:bg-[#003a70]"
-      : "bg-emerald-50 border-emerald-300"
+        ? "bg-[#002D58] border-[#002D58] hover:bg-[#003a70]"
+        : "bg-emerald-50 border-emerald-300"
 
   const confirmIconColor =
     status === "missing"
       ? "text-red-500"
       : status === "suggested"
-      ? "text-white"
-      : "text-emerald-500"
+        ? "text-white"
+        : "text-emerald-500"
 
   return (
     <div className="flex items-center gap-2 mt-3">
