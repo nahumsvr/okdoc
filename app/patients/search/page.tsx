@@ -49,6 +49,7 @@ export default function PatientSearchPage() {
               name: p.nombreCompleto || p.nombre || "Sin nombre paciente",
               status: "pending",
               lastUpdated: new Date(p.updatedAt).toLocaleDateString(),
+              raw: p,
             }));
             setPatients(fetchedPatients);
           }

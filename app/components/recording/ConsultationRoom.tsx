@@ -1,12 +1,27 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import LiveAudioVisualizer from './LiveAudioVisualizer';
 import PatientLiveExtractionSidebar from './PatientLiveExtractionSidebar';
 import { useRecordingStore } from '../../../store/useRecordingStore';
 
 export default function ConsultationRoom() {
     const { isRecording } = useRecordingStore();
+    const [patientName, setPatientName] = useState("Desconocido");
+
+    useEffect(() => {
+        const stored = localStorage.getItem("selected_patient");
+        if (stored) {
+            try {
+                const patient = JSON.parse(stored);
+                if (patient.nombreCompleto || patient.nombre) {
+                    setPatientName(patient.nombreCompleto || patient.nombre);
+                }
+            } catch (e) {
+                // ignore
+            }
+        }
+    }, []);
     
     return (
         <div className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-[1600px] mx-auto">
@@ -16,7 +31,7 @@ export default function ConsultationRoom() {
                     <div>
                         <h1 className="text-4xl font-extrabold font-headline text-[#001834] tracking-tight">Consulta N° 04</h1>
                         <p className="text-[#002D58] font-bold mt-1">
-                            Paciente: <span className="text-[#C6A152] font-black">Julianne V. Sterling</span>
+                            Paciente: <span className="text-[#C6A152] font-black">{patientName}</span>
                         </p>
                     </div>
                     <div className="flex flex-col items-end gap-2">
