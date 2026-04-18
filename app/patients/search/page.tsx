@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/moscati/Sidebar";
 import { SearchHeader } from "../../components/search/SearchHeader";
 import { SearchInput } from "../../components/search/SearchInput";
@@ -8,6 +8,8 @@ import { SearchButton } from "../../components/search/SearchButton";
 import { PatientResultCard, PatientResultProps } from "../../components/search/PatientResultCard";
 
 export default function PatientSearchPage() {
+  const [patients, setPatients] = useState<PatientResultProps[]>([]);
+
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("access_token");
@@ -28,22 +30,35 @@ export default function PatientSearchPage() {
       }
     };
     fetchProfile();
-  }, []);
 
-  const mockResults: PatientResultProps[] = [
-    {
-      id: "1029-MCP-24",
-      name: "Maria González Ruiz",
-      status: "pending",
-      lastUpdated: "Hace 2 horas",
-    },
-    {
-      id: "8492-MCP-23",
-      name: "Juan Pérez Gómez",
-      status: "validated",
-      lastUpdated: "Ayer, 14:30",
-    },
-  ];
+    const fetchPatients = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://localhost:3000/patients", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const json = await response.json();
+          if (json && json.data) {
+            const fetchedPatients: PatientResultProps[] = json.data.map((p: any) => ({
+              id: p._id,
+              name: p.nombreCompleto || p.nombre || "Sin nombre paciente",
+              status: "pending",
+              lastUpdated: new Date(p.updatedAt).toLocaleDateString(),
+            }));
+            setPatients(fetchedPatients);
+          }
+        }
+      } catch (err) {
+        console.error("Error al obtener los pacientes", err);
+      }
+    };
+    fetchPatients();
+  }, []);
 
   return (
     <div className="bg-surface text-on-surface h-screen overflow-hidden flex flex-col antialiased">
@@ -85,9 +100,13 @@ export default function PatientSearchPage() {
                 Resultados de Búsqueda
               </h2>
               <div className="grid grid-cols-1 gap-4">
-                {mockResults.map((patient) => (
-                  <PatientResultCard key={patient.id} patient={patient} />
-                ))}
+                {patients.length > 0 ? (
+                  patients.map((patient) => (
+                    <PatientResultCard key={patient.id} patient={patient} />
+                  ))
+                ) : (
+                  <p className="text-on-surface-variant">Cargando pacientes o sin resultados...</p>
+                )}
               </div>
             </section>
 
