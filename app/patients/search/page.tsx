@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import Sidebar from "../../components/moscati/Sidebar";
 import { SearchHeader } from "../../components/search/SearchHeader";
 import { SearchInput } from "../../components/search/SearchInput";
@@ -6,6 +8,28 @@ import { SearchButton } from "../../components/search/SearchButton";
 import { PatientResultCard, PatientResultProps } from "../../components/search/PatientResultCard";
 
 export default function PatientSearchPage() {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://localhost:3000/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const profile = await response.json();
+          localStorage.setItem("user_profile", JSON.stringify(profile));
+        }
+      } catch (err) {
+        console.error("Error al obtener el perfil", err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   const mockResults: PatientResultProps[] = [
     {
       id: "1029-MCP-24",

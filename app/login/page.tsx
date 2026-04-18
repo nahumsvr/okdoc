@@ -37,7 +37,7 @@ export default function LoginPage() {
         throw new Error(data.message || "Error al iniciar sesión");
       }
       localStorage.setItem("access_token", data.jwt);
-      router.push("/validation");
+      router.push("/patients/search");
     } catch (err: any) {
       setError(err.message || "Error de conexión");
       setLoading(false);
