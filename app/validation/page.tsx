@@ -142,7 +142,7 @@ export default function ValidationPage() {
                 </h2>
                 {missingCount > 0 && (
                   <span className="bg-red-50 text-red-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-50">
-                    {missingCount} MISSING FIELDS
+                    {missingCount} CAMPOS FALTANTES
                   </span>
                 )}
               </div>
@@ -171,7 +171,7 @@ export default function ValidationPage() {
                   </div>
                   Revisión General
                 </h2>
-                <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">AI Generated</span>
+                <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Generado por IA</span>
               </div>
 
               {Object.entries(report.revisionGeneral).map(([key, field]) => (
@@ -239,9 +239,9 @@ export default function ValidationPage() {
                <span className="material-symbols-outlined text-4xl font-bold">check_circle</span>
              </div>
              <h3 className="text-2xl font-extrabold text-[#002D58] mb-2">Validación Exitosa</h3>
-             <p className="text-sm font-medium text-gray-500 mb-8">El reporte de Juan Pérez se ha firmado y sincronizado con Moscati Clinical Precision.</p>
+             <p className="text-sm font-medium text-gray-500 mb-8">El reporte de Juan Pérez se ha firmado y sincronizado con el ecosistema OkDoc.</p>
              <button onClick={() => router.push('/reports')} className="w-full bg-[#002D58] hover:bg-[#001834] text-white font-bold py-3.5 rounded-xl transition-all shadow-md active:scale-95">
-                Ir a Reportes Archivos
+                Ir al Archivo de Reportes
              </button>
              <button onClick={() => setIsCompleted(false)} className="w-full mt-3 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors">
                 Seguir Editando

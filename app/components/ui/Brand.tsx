@@ -9,11 +9,11 @@ export function Brand() {
         </svg>
       </div>
       <div>
-        <p className="font-extrabold text-[13px] text-[#002D58] leading-tight" style={{ fontFamily: "Manrope, sans-serif" }}>
-          Clinical Precision
+        <p className="font-extrabold text-[15px] text-[#002D58] leading-tight" style={{ fontFamily: "Manrope, sans-serif" }}>
+          OkDoc
         </p>
         <p className="text-[10px] font-semibold text-gray-400 tracking-widest uppercase">
-          Validation Workspace
+          Espacio de Validación
         </p>
       </div>
     </div>

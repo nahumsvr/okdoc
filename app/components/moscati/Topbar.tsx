@@ -16,11 +16,11 @@ export default function Topbar({ patient, filter, onFilterChange, missingCount, 
       {/* Patient info */}
       <div className="flex gap-8">
         <div>
-          <p className="text-[10px] font-semibold tracking-widest uppercase text-gray-400">Patient</p>
+          <p className="text-[10px] font-semibold tracking-widest uppercase text-gray-400">Paciente</p>
           <p className="text-sm font-semibold text-gray-900">{patient.name}</p>
         </div>
         <div>
-          <p className="text-[10px] font-semibold tracking-widest uppercase text-gray-400">Date</p>
+          <p className="text-[10px] font-semibold tracking-widest uppercase text-gray-400">Fecha</p>
           <p className="text-sm font-semibold text-gray-900">{patient.date}</p>
         </div>
       </div>
@@ -35,7 +35,7 @@ export default function Topbar({ patient, filter, onFilterChange, missingCount, 
               filter === "full" ? "bg-gray-100 text-gray-900 font-semibold" : "bg-white text-gray-500 hover:bg-gray-50"
             }`}
           >
-            Full Report
+            Reporte Completo
           </button>
           <button
             onClick={() => onFilterChange("missing")}
@@ -43,7 +43,7 @@ export default function Topbar({ patient, filter, onFilterChange, missingCount, 
               filter === "missing" ? "bg-gray-100 text-gray-900 font-semibold" : "bg-white text-gray-500 hover:bg-gray-50"
             }`}
           >
-            Missing Info Only
+            Solo Información Faltante
             {missingCount > 0 && (
               <span className="bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                 {missingCount}
@@ -53,7 +53,7 @@ export default function Topbar({ patient, filter, onFilterChange, missingCount, 
         </div>
 
         <button onClick={onCompleteValidation} className="bg-[#002D58] hover:bg-[#003a70] text-white text-[13px] font-semibold px-4 py-2 rounded-lg transition-colors">
-          Complete Validation
+          Completar Validación
         </button>
 
         <div className="w-px h-5 bg-gray-200 mx-1" />

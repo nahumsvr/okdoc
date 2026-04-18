@@ -7,26 +7,26 @@ export function SearchHeader() {
     <header className="bg-white text-[#002D58] font-manrope tracking-tight text-sm uppercase font-semibold w-full top-0 shadow-[0_12px_32px_-4px_rgba(0,45,88,0.08)] flex justify-between items-center px-8 h-16 z-50 relative shrink-0">
       <div className="flex items-center gap-8 h-full">
         <span className="text-2xl font-black text-[#002D58] font-manrope normal-case tracking-normal">
-          Clinical Curator
+          OkDoc
         </span>
         <nav className="hidden md:flex h-full items-center space-x-6">
           <a
             className="text-slate-500 hover:text-[#C6A152] transition-colors duration-200 h-full flex items-center scale-95 active:opacity-80 transition-transform"
             href="#"
           >
-            Dashboard
+            Panel Principal
           </a>
           <a
             className="text-slate-500 hover:text-[#C6A152] transition-colors duration-200 h-full flex items-center scale-95 active:opacity-80 transition-transform"
             href="#"
           >
-            Patient Registry
+            Registro de Pacientes
           </a>
           <a
             className="text-slate-500 hover:text-[#C6A152] transition-colors duration-200 h-full flex items-center scale-95 active:opacity-80 transition-transform"
             href="#"
           >
-            Validation Queue
+            Cola de Validación
           </a>
         </nav>
       </div>

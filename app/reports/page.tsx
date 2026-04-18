@@ -67,10 +67,10 @@ export default function ReportArchivePage() {
              <div className="flex items-center justify-between">
                 <div>
                   <h1 className="font-headline text-2xl font-extrabold text-[#002D58] tracking-tight">
-                    Report Archive
+                    Archivo de Reportes
                   </h1>
                   <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mt-0.5">
-                    14,284 Registros Totales
+                    14,284 Registros Totales en OkDoc
                   </p>
                 </div>
                 
@@ -100,7 +100,7 @@ export default function ReportArchivePage() {
                 </button>
                 <button className="whitespace-nowrap px-4 py-1.5 rounded-full bg-[#C6A152]/10 border border-[#C6A152]/20 text-[#be933a] hover:bg-[#C6A152]/20 transition-colors text-xs font-bold tracking-wide flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
-                  Borradores IA
+                  Borradores de IA
                 </button>
              </div>
           </div>

@@ -18,7 +18,7 @@ export default function ClinicalDataPage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-outline-variant/30 pb-4 gap-4">
               <div>
                 <h1 className="font-headline text-3xl font-extrabold text-[#002D58] tracking-tight">
-                  Clinical Data Overview
+                  Resumen de Datos Clínicos
                 </h1>
                 <p className="text-sm font-medium text-on-surface-variant mt-1 max-w-xl">
                   Métricas agregadas y distribución poblacional en tiempo real del registro hospitalario.

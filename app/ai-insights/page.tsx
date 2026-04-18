@@ -71,18 +71,18 @@ export default function AiInsightsPage() {
               <div>
                 <h1 className="font-headline text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
                   <span className="material-symbols-outlined text-[#C6A152] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>insights</span>
-                  Medical Intelligence Hub
+                  Centro de Inteligencia Médica
                 </h1>
                 <p className="text-sm font-medium text-white/50 mt-1 max-w-xl">
-                  Motor de inferencia global detectando patrones ocultos y oportunidades operativas dentro de la clínica.
+                  Motor de inferencia global detectando patrones ocultos y de optimización operativa en OkDoc.
                 </p>
               </div>
               <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md rounded-xl p-1 border border-white/10">
                 <button className="px-4 py-2 rounded-lg bg-[#C6A152] text-[#001834] font-bold text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(198,161,82,0.4)]">
-                   Live Feed
+                   En Vivo
                 </button>
                  <button className="px-4 py-2 rounded-lg text-white/50 hover:text-white font-bold text-xs uppercase tracking-widest transition-colors">
-                   Archived
+                   Archivados
                 </button>
               </div>
             </div>

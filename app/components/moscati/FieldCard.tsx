@@ -47,12 +47,12 @@ export default function FieldCard({ label, field, onStatusChange }: FieldCardPro
           </p>
           {isMissing && (
             <span className="inline-flex items-center gap-1 bg-red-50 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-md">
-              MISSING
+              FALTANTE
             </span>
           )}
           {isSuggested && (
             <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-500 text-[10px] font-bold px-2 py-0.5 rounded-md">
-              AI SUGGESTED
+              SUGERIDO POR IA
             </span>
           )}
           {isValidated && (
@@ -60,7 +60,7 @@ export default function FieldCard({ label, field, onStatusChange }: FieldCardPro
               <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
                 <polyline points="20 6 9 17 4 12" />
               </svg>
-              CONFIRMED
+              CONFIRMADO
             </span>
           )}
         </div>

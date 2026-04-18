@@ -15,7 +15,7 @@ export function FilterToggle({ filter, onFilterChange, missingCount }: FilterTog
           filter === "full" ? "bg-gray-100 text-gray-900 font-semibold" : "bg-white text-gray-500 hover:bg-gray-50"
         }`}
       >
-        Full Report
+        Reporte Completo
       </button>
       <button
         onClick={() => onFilterChange("missing")}
@@ -23,7 +23,7 @@ export function FilterToggle({ filter, onFilterChange, missingCount }: FilterTog
           filter === "missing" ? "bg-gray-100 text-gray-900 font-semibold" : "bg-white text-gray-500 hover:bg-gray-50"
         }`}
       >
-        Missing Info Only
+        Solo Información Faltante
         {missingCount > 0 && (
           <span className="bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
             {missingCount}
