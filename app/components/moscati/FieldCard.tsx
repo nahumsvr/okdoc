@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ClinicalField } from "@/types/moscati"
+import type { ClinicalField } from "./types/moscati"
 import FieldActions from "./FieldActions"
 
 interface FieldCardProps {
@@ -33,7 +33,7 @@ export default function FieldCard({ label, field, onStatusChange }: FieldCardPro
   const [localValue, setLocalValue] = useState(field.value ?? "")
   const [currentField, setCurrentField] = useState<ClinicalField>(field)
 
-  const styles = statusStyles[currentField.status]
+  const styles = statusStyles[currentField.status as keyof typeof statusStyles] || statusStyles.missing
 
   const handleConfirm = () => {
     setCurrentField({ ...currentField, status: "validated", value: localValue || currentField.value })

@@ -1,8 +1,6 @@
 import React from "react"
 
-interface NewValidationButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
-
-export function NewValidationButton(props: NewValidationButtonProps) {
+export function NewValidationButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       className="w-full bg-[#002D58] hover:bg-[#003a70] text-white text-[13px] font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors"

@@ -1,8 +1,6 @@
 import React from "react"
 
-interface BellButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
-
-export function BellButton(props: BellButtonProps) {
+export function BellButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button className="text-gray-400 hover:text-gray-600 transition-colors" {...props}>
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
