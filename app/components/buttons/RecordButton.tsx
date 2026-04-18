@@ -25,8 +25,8 @@ export default function RecordButton() {
                 )}
             </button>
 
-            <span className={`text-sm font-medium ${isRecording ? 'text-red-500' : 'text-gray-500'}`}>
-                {isRecording ? 'Grabando consulta...' : 'Iniciar consulta'}
+            <span className={`text-sm tracking-wide uppercase font-bold mt-2 ${isRecording ? 'text-red-500 animate-pulse' : 'text-[#737780]'}`}>
+                {isRecording ? 'IA Escuchando...' : 'IA lista para grabar'}
             </span>
         </div>
     );
